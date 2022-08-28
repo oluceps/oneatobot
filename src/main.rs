@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use rand::prelude::*;
 use rand::Rng;
 use std::vec;
 use std::{collections::HashMap, io};
@@ -25,7 +24,7 @@ fn main() {
             ab_map.insert([a, b], Vec::new());
         }
     }
-    println!("length of map generated: {}", ab_map.len());
+    //println!("length of map generated: {}", ab_map.len());
 
     // ab_map.insert([1, 1], vec![vec![1u8, 3u8, 2u8]]);
 
@@ -42,16 +41,26 @@ fn main() {
         rand_1.push(int_pool[index]);
         int_pool.remove(index);
 
-        println!("{:?}", &int_pool.len());
+        //println!("{:?}", &int_pool.len());
     }
 
     let mut anspool_seq: Vec<Vec<u8>> = vec![];
-    for perm in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].into_iter().permutations(3) {
+    for perm in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        .into_iter()
+        .permutations(length.into())
+    {
         anspool_seq.push(perm);
     }
 
-    println!("{:?}", anspool_seq);
+//    println!("{:?} \n {:?}", rand_1, anspool_seq);
 
+    for i in anspool_seq.iter() {
+        //        println!("comparing {:?}{:?} \n{:?}", &i, &rand_1, check_ans(i, &rand_1));
+        let ent = ab_map.entry(check_ans(i, &rand_1)).or_default();
+        ent.push(i.to_vec());
+    }
+
+    println!("{:?}\n {:?}",rand_1, ab_map);
     // let anspool_seq = permute(rand_1);
 
     // println!("{:?}", anspool_seq);
@@ -63,37 +72,19 @@ fn main() {
     //   println!("{:?}", &ab_map);
 }
 
-fn permute(nums: Vec<u8>) -> Vec<Vec<u8>> {
-    let mut vec = Vec::new();
+// nums from anspool_seq;
+fn check_ans<'a>(num: &'a Vec<u8>, num_1: &'a Vec<u8>) -> [u8; 2] {
+    let mut a: u8 = 0;
+    let mut b: u8 = 0;
 
-    if nums.len() == 1 {
-        vec.push(nums);
-    } else {
-        for (i, _item) in nums.iter().enumerate() {
-            let left: u8 = nums[i];
-
-            let mut v1: Vec<&[u8]> = vec![];
-
-            v1.push(&nums[0..i]);
-            v1.push(&nums[i + 1..]);
-
-            let right = v1.concat();
-
-            let arr = permute(right);
-
-            for (j, _item2) in arr.iter().enumerate() {
-                let mut vec2 = Vec::new();
-
-                vec2.push(left);
-
-                for item3 in &arr[j] {
-                    vec2.push(*item3);
-                }
-
-                vec.push(vec2);
-            }
+    for (i, element) in num.iter().enumerate() {
+        if num_1.get(i).unwrap() == element {
+            a += 1;
+        }
+        if num_1.contains(element) && num_1.get(i).unwrap() != element {
+            b += 1;
         }
     }
-
-    vec
+    let res: [u8; 2] = [a, b];
+    res
 }
