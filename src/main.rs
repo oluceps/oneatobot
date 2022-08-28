@@ -1,5 +1,7 @@
+use itertools::Itertools;
 use rand::prelude::*;
 use rand::Rng;
+use std::vec;
 use std::{collections::HashMap, io};
 fn main() {
     println!("input length: ");
@@ -42,14 +44,56 @@ fn main() {
 
         println!("{:?}", &int_pool.len());
     }
-    
 
+    let mut anspool_seq: Vec<Vec<u8>> = vec![];
+    for perm in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].into_iter().permutations(3) {
+        anspool_seq.push(perm);
+    }
 
-    println!("{:?}", rand_1);
+    println!("{:?}", anspool_seq);
+
+    // let anspool_seq = permute(rand_1);
+
+    // println!("{:?}", anspool_seq);
+
+    // println!("{:?}", rand_1);
 
     //    println!("{:?}", ab_map.get(&[1, 1]).unwrap());
 
     //   println!("{:?}", &ab_map);
 }
 
+fn permute(nums: Vec<u8>) -> Vec<Vec<u8>> {
+    let mut vec = Vec::new();
 
+    if nums.len() == 1 {
+        vec.push(nums);
+    } else {
+        for (i, _item) in nums.iter().enumerate() {
+            let left: u8 = nums[i];
+
+            let mut v1: Vec<&[u8]> = vec![];
+
+            v1.push(&nums[0..i]);
+            v1.push(&nums[i + 1..]);
+
+            let right = v1.concat();
+
+            let arr = permute(right);
+
+            for (j, _item2) in arr.iter().enumerate() {
+                let mut vec2 = Vec::new();
+
+                vec2.push(left);
+
+                for item3 in &arr[j] {
+                    vec2.push(*item3);
+                }
+
+                vec.push(vec2);
+            }
+        }
+    }
+
+    vec
+}
