@@ -2,6 +2,7 @@ use itertools::Itertools;
 use rand::Rng;
 use std::vec;
 use std::{collections::HashMap, io};
+
 fn main() {
     println!("input length: ");
     let mut input_line = String::new();
@@ -12,25 +13,20 @@ fn main() {
 
     let mut int_pool: Vec<u8> = vec![];
 
+    // fill in with 0~9 integer
     for i in 0..10 {
         int_pool.push(i);
     }
-    //    println!("{:?} {}", int_pool, int_pool.len());
 
-    let mut ab_map: HashMap<[u8; 2], Vec<Vec<u8>>> = HashMap::new();
+    // HashMap  x,y -> assumed right answers pool
+    let mut map_xy_anspool: HashMap<[u8; 2], Vec<Vec<u8>>> = HashMap::new();
 
+    // all probablity of xAyB under specific length
     for b in 0..length + 1 {
         for a in 0..length - b + 1 {
-            ab_map.insert([a, b], Vec::new());
+            map_xy_anspool.insert([a, b], Vec::new());
         }
     }
-    //println!("length of map generated: {}", ab_map.len());
-
-    // ab_map.insert([1, 1], vec![vec![1u8, 3u8, 2u8]]);
-
-    // let tes = ab_map.entry([1, 1]).or_insert(vec![]);
-
-    // tes.push(vec![2u8, 1u8, 3u8]);
 
     let mut rand_1: Vec<u8> = vec![];
     let mut rng = rand::thread_rng();
@@ -43,36 +39,60 @@ fn main() {
 
         //println!("{:?}", &int_pool.len());
     }
+    // rand num generate complete
 
-    let mut anspool_seq: Vec<Vec<u8>> = vec![];
+    let mut primitive_anspool_with_sequence: Vec<Vec<u8>> = vec![];
     for perm in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         .into_iter()
         .permutations(length.into())
     {
-        anspool_seq.push(perm);
+        // perm nums with spec length
+        primitive_anspool_with_sequence.push(perm);
     }
 
-//    println!("{:?} \n {:?}", rand_1, anspool_seq);
+    // CLASSIFICATION
+    for i in primitive_anspool_with_sequence.iter() {
+        // println!("comparing {:?}{:?} \n{:?}", &i, &rand_1, check_ans(i, &rand_1));
 
-    for i in anspool_seq.iter() {
-        //        println!("comparing {:?}{:?} \n{:?}", &i, &rand_1, check_ans(i, &rand_1));
-        let ent = ab_map.entry(check_ans(i, &rand_1)).or_default();
+        // find entry in map_xy_anspool, and push into empty Vec
+        let ent = map_xy_anspool.entry(check_ans(i, &rand_1)).or_default();
         ent.push(i.to_vec());
     }
 
-    println!("{:?}\n {:?}",rand_1, ab_map);
-    // let anspool_seq = permute(rand_1);
+    // println!("{:?}\n {:?}", rand_1, map_xy_anspool);
 
-    // println!("{:?}", anspool_seq);
+    // filter empty map in map_xy_anspool
+    for (key, item) in map_xy_anspool.clone() {
+        // println!("{:?}  {:?}", &key, &item);
+        if item.is_empty() {
+            map_xy_anspool.remove(&key).unwrap();
+        }
+    }
 
-    // println!("{:?}", rand_1);
+    println!("{:?}", map_xy_anspool);
 
-    //    println!("{:?}", ab_map.get(&[1, 1]).unwrap());
-
-    //   println!("{:?}", &ab_map);
+    // LOOP
+    feedback();
 }
 
-// nums from anspool_seq;
+// TODO: ref
+fn feedback() -> [u8; 2] {
+    println!("A:");
+    let mut input_line = String::new();
+    io::stdin()
+        .read_line(&mut input_line)
+        .expect("Failed to read line");
+    let a: u8 = input_line.trim().parse().expect("Input not an u8 integer");
+
+    println!("B:");
+    input_line = String::new();
+    io::stdin()
+        .read_line(&mut input_line)
+        .expect("Failed to read line");
+    let b: u8 = input_line.trim().parse().expect("Input not an u8 integer");
+    [a, b]
+}
+
 fn check_ans<'a>(num: &'a Vec<u8>, num_1: &'a Vec<u8>) -> [u8; 2] {
     let mut a: u8 = 0;
     let mut b: u8 = 0;
