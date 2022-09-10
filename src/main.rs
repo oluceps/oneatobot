@@ -1,6 +1,6 @@
 use core::panic;
 use itertools::Itertools;
-use rand::Rng;
+use rand::{thread_rng, Rng};
 use std::vec;
 use std::{collections::HashMap, io};
 
@@ -22,7 +22,7 @@ fn main() {
     // HashMap  x,y -> assumed right answers pool
     let mut map_xy_anspool: HashMap<[u8; 2], Vec<Vec<u8>>> = HashMap::new();
 
-    map_xy_anspool = init_anspool(&length, map_xy_anspool);
+    let mut empty_map_xy_anspool = map_xy_anspool.clone();
 
     let mut rand_1: Vec<u8> = vec![];
     let mut rng = rand::thread_rng();
@@ -55,6 +55,8 @@ fn main() {
         ent.push(i.to_vec());
     }
 
+    println!("{:?}", map_xy_anspool.len());
+
     // println!("{:?}\n {:?}", rand_1, map_xy_anspool);
 
     // filter empty map in map_xy_anspool
@@ -68,14 +70,39 @@ fn main() {
     println!("{:?}", map_xy_anspool);
 
     // LOOP
-    let loop_anspool = match map_xy_anspool.get(&feedback()) {
-        Some(v) => v,
+    let mut loop_anspool = match map_xy_anspool.get(&feedback()) {
+        Some(v) => v.clone(),
         None => panic!("AB input error"),
     };
 
     // clear map_xy_anspool
 
     println!("{:?}", &loop_anspool);
+    //    map_xy_anspool = empty_map_xy_anspool;
+
+    // choose next num, count derivations
+
+    let next_num = choose(&loop_anspool);
+    println!("{:?}", &next_num);
+
+    //CLASSIFICATION in loop anspool
+    for i in primitive_anspool_with_sequence.iter() {
+        //        prinln!(
+        //           "comparing {:?}{:?} \n{:?}",
+        //           &i,
+        //           &rand_1,
+        //           check_ans(i, &rand_1)
+        //       );
+        //
+        // find entry in map_xy_anspool, and push into empty Vec
+        let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
+        ent.push(i.to_vec());
+    }
+}
+fn choose(raw: &Vec<Vec<u8>>) -> &Vec<u8> {
+    let mut rng = rand::thread_rng();
+    let index = rng.gen_range(0..raw.len());
+    raw.get(index).unwrap()
 }
 
 // TODO: ref
