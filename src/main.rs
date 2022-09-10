@@ -1,3 +1,4 @@
+use core::panic;
 use itertools::Itertools;
 use rand::Rng;
 use std::vec;
@@ -21,12 +22,7 @@ fn main() {
     // HashMap  x,y -> assumed right answers pool
     let mut map_xy_anspool: HashMap<[u8; 2], Vec<Vec<u8>>> = HashMap::new();
 
-    // all probablity of xAyB under specific length
-    for b in 0..length + 1 {
-        for a in 0..length - b + 1 {
-            map_xy_anspool.insert([a, b], Vec::new());
-        }
-    }
+    map_xy_anspool = init_anspool(&length, map_xy_anspool);
 
     let mut rand_1: Vec<u8> = vec![];
     let mut rng = rand::thread_rng();
@@ -72,7 +68,14 @@ fn main() {
     println!("{:?}", map_xy_anspool);
 
     // LOOP
-    feedback();
+    let loop_anspool = match map_xy_anspool.get(&feedback()) {
+        Some(v) => v,
+        None => panic!("AB input error"),
+    };
+
+    // clear map_xy_anspool
+
+    println!("{:?}", &loop_anspool);
 }
 
 // TODO: ref
@@ -91,6 +94,19 @@ fn feedback() -> [u8; 2] {
         .expect("Failed to read line");
     let b: u8 = input_line.trim().parse().expect("Input not an u8 integer");
     [a, b]
+}
+
+fn init_anspool(
+    length: &u8,
+    mut map_xy_anspool: HashMap<[u8; 2], Vec<Vec<u8>>>,
+) -> HashMap<[u8; 2], Vec<Vec<u8>>> {
+    // all probablity of xAyB under specific length
+    for b in 0..length + 1 {
+        for a in 0..length - b + 1 {
+            map_xy_anspool.insert([a, b], Vec::new());
+        }
+    }
+    map_xy_anspool
 }
 
 fn check_ans<'a>(num: &'a Vec<u8>, num_1: &'a Vec<u8>) -> [u8; 2] {
