@@ -70,35 +70,47 @@ fn main() {
     println!("{:?}", map_xy_anspool);
 
     // LOOP
-    let mut loop_anspool = match map_xy_anspool.get(&feedback()) {
-        Some(v) => v.clone(),
-        None => panic!("AB input error"),
-    };
+    loop {
+        let mut loop_anspool = match map_xy_anspool.get(&feedback()) {
+            Some(v) => v.clone(),
+            None => panic!("AB input error"),
+        };
 
-    // clear map_xy_anspool
+        // clear map_xy_anspool
 
-    println!("{:?}", &loop_anspool);
-    //    map_xy_anspool = empty_map_xy_anspool;
+        // println!("{:?}", &loop_anspool);
+        //    map_xy_anspool = empty_map_xy_anspool;
 
-    // choose next num, count derivations
+        // choose next num, count derivations
 
-    let next_num = choose(&loop_anspool);
-    println!("{:?}", &next_num);
+        let next_num = choose(&loop_anspool);
 
-    //CLASSIFICATION in loop anspool
-    for i in primitive_anspool_with_sequence.iter() {
-        //        prinln!(
-        //           "comparing {:?}{:?} \n{:?}",
-        //           &i,
-        //           &rand_1,
-        //           check_ans(i, &rand_1)
-        //       );
-        //
-        // find entry in map_xy_anspool, and push into empty Vec
-        let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
-        ent.push(i.to_vec());
+        println!("\n\nthe next num : {:?}", &next_num);
+
+        // reinit map
+        map_xy_anspool = empty_map_xy_anspool.clone();
+
+        println!("map_xy_anspool now is : \n{:?}", &map_xy_anspool);
+
+        // CLASSIFICATION in loop anspool
+        // TODO: reduce primitive pool IMPORTANT
+        for i in primitive_anspool_with_sequence.iter() {
+            //        prinln!(
+            //           "comparing {:?}{:?} \n{:?}",
+            //           &i,
+            //           &rand_1,
+            //           check_ans(i, &rand_1)
+            //       );
+            //
+            // find entry in map_xy_anspool, and push into empty Vec
+            let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
+            ent.push(i.to_vec());
+        }
+        println!("\n\nmap after cmp & add: {:?}", &map_xy_anspool);
     }
 }
+
+// should return back an Vec with len as length
 fn choose(raw: &Vec<Vec<u8>>) -> &Vec<u8> {
     let mut rng = rand::thread_rng();
     let index = rng.gen_range(0..raw.len());
