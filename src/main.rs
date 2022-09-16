@@ -71,7 +71,8 @@ fn main() {
 
     // LOOP
     loop {
-        let mut loop_anspool = match map_xy_anspool.get(&feedback()) {
+        let feedback = feedback();
+        let mut loop_anspool = match map_xy_anspool.get(&feedback) {
             Some(v) => v.clone(),
             None => panic!("AB input error"),
         };
@@ -87,21 +88,22 @@ fn main() {
 
         println!("\n\nthe next num : {:?}", &next_num);
 
+        map_xy_anspool.remove(&feedback).unwrap();
+
+        println!("\n\ntmp_exp_map \n{:?}", &map_xy_anspool);
+
+        let vec_in_map = map_xy_anspool.values();
+
+        primitive_anspool_with_sequence.dedup_by_key(|a| vec_in_map.contains(a));
+
         // reinit map
-        map_xy_anspool = empty_map_xy_anspool.clone();
+        map_xy_anspool.clear();
 
         println!("map_xy_anspool now is : \n{:?}", &map_xy_anspool);
 
         // CLASSIFICATION in loop anspool
-        // TODO: reduce primitive pool IMPORTANT
+        // TODO: shrink primitive pool (IMPORTANT)
         for i in primitive_anspool_with_sequence.iter() {
-            //        prinln!(
-            //           "comparing {:?}{:?} \n{:?}",
-            //           &i,
-            //           &rand_1,
-            //           check_ans(i, &rand_1)
-            //       );
-            //
             // find entry in map_xy_anspool, and push into empty Vec
             let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
             ent.push(i.to_vec());
