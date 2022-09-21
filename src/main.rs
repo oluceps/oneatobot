@@ -84,19 +84,13 @@ fn main() {
 
         println!("\n\nthe next num : {:?}", &next_num);
 
-        map_xy_anspool.remove(&feedback).unwrap();
+        // TODO: get the list in this step
+        let fdback = feedback;
 
-        println!("\n\ntmp_exp_map \n{:?}", &map_xy_anspool);
+        // vec of num for next gen
+        let mut vec_map_xy_anspool_val = map_xy_anspool.get(&fdback).unwrap();
 
-        let mut vec_map_xy_anspool_val: Vec<Vec<u8>> = vec![];
-
-        for (_, val) in map_xy_anspool.clone() {
-            for i in val {
-                vec_map_xy_anspool_val.push(i);
-            }
-        }
-
-        primitive_anspool_with_sequence.retain(|x| !vec_map_xy_anspool_val.contains(x));
+        primitive_anspool_with_sequence.retain(|x| vec_map_xy_anspool_val.contains(x));
 
         // reinit map
         map_xy_anspool.clear();
@@ -104,13 +98,13 @@ fn main() {
         println!("map_xy_anspool now is : \n{:?}", &map_xy_anspool);
 
         // CLASSIFICATION in loop anspool
-        // TODO: shrink primitive pool (IMPORTANT)
+        // complete: shrink primitive pool (IMPORTANT)
         for i in primitive_anspool_with_sequence.iter() {
             // find entry in map_xy_anspool, and push into empty Vec
             let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
             ent.push(i.to_vec());
         }
-        println!("\n\nmap after cmp & add: {:?}", &map_xy_anspool);
+        println!("\n\nmap after cmp & add: \n {:?}", &map_xy_anspool);
     }
 }
 
