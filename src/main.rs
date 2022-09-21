@@ -22,8 +22,6 @@ fn main() {
     // HashMap  x,y -> assumed right answers pool
     let mut map_xy_anspool: HashMap<[u8; 2], Vec<Vec<u8>>> = HashMap::new();
 
-    let mut empty_map_xy_anspool = map_xy_anspool.clone();
-
     let mut rand_1: Vec<u8> = vec![];
     let mut rng = rand::thread_rng();
 
@@ -71,7 +69,6 @@ fn main() {
 
     // LOOP
     loop {
-        let feedback = feedback();
         let mut loop_anspool = match map_xy_anspool.get(&feedback) {
             Some(v) => v.clone(),
             None => panic!("AB input error"),
