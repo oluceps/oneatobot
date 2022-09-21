@@ -78,10 +78,6 @@ fn main() {
         };
 
         // clear map_xy_anspool
-
-        // println!("{:?}", &loop_anspool);
-        //    map_xy_anspool = empty_map_xy_anspool;
-
         // choose next num, count derivations
 
         let next_num = choose(&loop_anspool);
@@ -92,9 +88,15 @@ fn main() {
 
         println!("\n\ntmp_exp_map \n{:?}", &map_xy_anspool);
 
-        let vec_in_map = map_xy_anspool.values();
+        let mut vec_map_xy_anspool_val: Vec<Vec<u8>> = vec![];
 
-        primitive_anspool_with_sequence.dedup_by_key(|a| vec_in_map.contains(a));
+        for (_, val) in map_xy_anspool.clone() {
+            for i in val {
+                vec_map_xy_anspool_val.push(i);
+            }
+        }
+
+        primitive_anspool_with_sequence.retain(|x| !vec_map_xy_anspool_val.contains(x));
 
         // reinit map
         map_xy_anspool.clear();
