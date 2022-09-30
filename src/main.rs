@@ -69,7 +69,10 @@ fn main() {
 
     // LOOP
     loop {
-        let mut loop_anspool = match map_xy_anspool.get(&feedback) {
+        // TODO: get the list in this step
+        let fdback = feedback();
+
+        let loop_anspool = match map_xy_anspool.get(&fdback) {
             Some(v) => v.clone(),
             None => panic!("AB input error"),
         };
@@ -80,12 +83,8 @@ fn main() {
         let next_num = choose(&loop_anspool);
 
         println!("\n\nthe next num : {:?}", &next_num);
-
-        // TODO: get the list in this step
-        let fdback = feedback;
-
         // vec of num for next gen
-        let mut vec_map_xy_anspool_val = map_xy_anspool.get(&fdback).unwrap();
+        let vec_map_xy_anspool_val = map_xy_anspool.get(&fdback).unwrap();
 
         primitive_anspool_with_sequence.retain(|x| vec_map_xy_anspool_val.contains(x));
 
