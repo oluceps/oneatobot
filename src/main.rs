@@ -53,7 +53,7 @@ fn main() {
         ent.push(i.to_vec());
     }
 
-    println!("{:?}", map_xy_anspool.len());
+    // println!("{:?}", map_xy_anspool.len());
 
     // println!("{:?}\n {:?}", rand_1, map_xy_anspool);
 
@@ -94,7 +94,7 @@ fn main() {
         // reinit map
         map_xy_anspool.clear();
 
-        println!("map_xy_anspool now is : \n{:?}", &map_xy_anspool);
+        // println!("map_xy_anspool now is : \n{:?}", &map_xy_anspool);
 
         // CLASSIFICATION in loop anspool
         // complete: shrink primitive pool (IMPORTANT)
@@ -103,7 +103,7 @@ fn main() {
             let ent = map_xy_anspool.entry(check_ans(i, &next_num)).or_default();
             ent.push(i.to_vec());
         }
-        println!("\n\nmap after cmp & add: \n {:?}", &map_xy_anspool);
+        // println!("\n\nmap after cmp & add: \n {:?}", &map_xy_anspool);
         //        if &map_xy_anspool.len() == 1 && &map_xy_anspool.get()
     }
 }
